@@ -1,0 +1,431 @@
+--[[
+    L I M E S T O N E  H U B
+      v0.10 | @realbxnnie
+]]
+
+if getgenv then
+	if getgenv().limestoneHub_running then
+		print("Limestone Hub is already running! Restarting...")
+	end
+	getgenv().limestoneHub_running = true
+else
+	if _G.limestoneHub_running then
+		print("Limestone Hub is already running! Restarting...")
+	end
+	_G.limestoneHub_running = true
+end
+
+print([[
+
+ __    __  _  _  ____  ____  ____  __   __ _  ____     _  _  _  _  ____ 
+(  )  (  )( \/ )(  __)/ ___)(_  _)/  \ (  ( \(  __)   / )( \/ )( \(  _ \
+/ (_/\ )( / \/ \ ) _) \___ \  )( (  O )/    / ) _)    ) __ () \/ ( ) _ (
+\____/(__)\_)(_/(____)(____/ (__) \__/ \_)__)(____)   \_)(_/\____/(____/                                                                                            
+]])
+
+local Rayfield
+local Limestone = {
+	Version = "0.10",
+	Debugger = {Debug = function(text) print("[Limestone.Debugger]: "..text) end}
+}
+
+local Tabs = {
+	MM2 = function(Window)
+		local MM2 = {
+			ESP = {
+				Roles = false,
+				Coins = false
+			},
+			Autofarm = {
+				Enabled = false,
+				Speed = 1,
+				FarmType = "Coin"
+			},
+			Visual = {
+				Lobby = "Default"
+			}
+
+		}
+		local TabMM2 = Window:CreateTab("Murder Mystery 2", "hammer") -- Title, Image
+
+		Rayfield:Notify({
+			Title = "Game Detected!",
+			Content = "Murder Mystery 2 has been added to the tabs section.",
+			Duration = 6.5,
+			Image = "joystick",
+		})
+
+		TabMM2:CreateSection("ESP | Unstable")
+		TabMM2:CreateToggle({
+			Name = "Roles",
+			CurrentValue = false,
+			Callback = function(Value)
+				MM2.ESP.Roles = Value
+			end
+		})
+
+		task.spawn(function()
+			while true do
+				if MM2.ESP.Roles then
+					for i,v in pairs(game.Players:GetPlayers()) do
+						if v.Name ~= game.Players.LocalPlayer.Name then
+							if v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") then
+								if not v.Character:FindFirstChild("limeESP") or v.Character:FindFirstChild("limeESP").FillColor ~= Color3.new(1,0, 0) then
+									local MurdererHilight = Instance.new("Highlight", v.Character)
+									MurdererHilight.Name = "limeESP"
+									MurdererHilight.Adornee = v.Character
+									MurdererHilight.FillColor = Color3.new(1, 0, 0)
+									MurdererHilight.FillTransparency = 0.5
+									MurdererHilight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+								end
+							elseif v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") then
+								if not v.Character:FindFirstChild("limeESP") or v.Character:FindFirstChild("limeESP").FillColor ~= Color3.new(0, 0, 1) then
+
+									local SheriffHilight = Instance.new("Highlight", v.Character)
+									SheriffHilight.Name = "limeESP"
+									SheriffHilight.Adornee = v.Character
+									SheriffHilight.FillColor = Color3.new(0, 0, 1)
+									SheriffHilight.FillTransparency = 0.5
+									SheriffHilight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+								end
+							else 
+								if not v.Character:FindFirstChild("limeESP") or v.Character:FindFirstChild("limeESP").FillColor ~= Color3.new(0, 1, 0) then
+									local InnoHilight = Instance.new("Highlight", v.Character)
+									InnoHilight.Name = "limeESP"
+									InnoHilight.Adornee = v.Character
+									InnoHilight.FillColor = Color3.new(0, 1, 0)
+									InnoHilight.FillTransparency = 0.5
+									InnoHilight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+								end
+							end
+						end
+					end
+				else
+					for i,v in pairs(game.Players:GetPlayers()) do
+						if v.Character then
+							if v.Character:FindFirstChild("limeESP") then
+								v.Character.limeESP:Destroy()
+							end
+						end
+					end
+				end
+				task.wait()
+			end
+		end)
+
+		TabMM2:CreateSection("Players")
+		TabMM2:CreateButton({
+			Name = "Teleport to Murderer",
+			Callback = function()
+				local murd 
+				for i,v in pairs(game.Players:GetPlayers()) do
+					if v.Name ~= game.Players.LocalPlayer.Name then
+						if v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") then
+							murd = v
+						end
+					end
+				end
+				if not murd then
+					Rayfield:Notify({
+						Title = "Error",
+						Content = "Murderer not found!",
+						Duration = 6.5,
+						Image = "x",
+					})
+				end
+				game.Players.LocalPlayer.Character.HumanoidRootPart:PivotTo(murd.Character.HumanoidRootPart.CFrame)
+			end,
+		})
+
+		TabMM2:CreateButton({
+			Name = "Teleport to Sheriff",
+			Callback = function()
+				local murd 
+				for i,v in pairs(game.Players:GetPlayers()) do
+					if v.Name ~= game.Players.LocalPlayer.Name then
+						if v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") then
+							murd = v
+						end
+					end
+				end
+				if not murd then
+					Rayfield:Notify({
+						Title = "Error",
+						Content = "Sheriff not found!",
+						Duration = 6.5,
+						Image = "x",
+					})
+				end
+				game.Players.LocalPlayer.Character.HumanoidRootPart:PivotTo(murd.Character.HumanoidRootPart.CFrame)
+			end,
+		})
+
+		task.spawn(function()
+			while true do
+				if MM2.Autofarm.Enabled then
+					game.Workspace.DescendantAdded:Connect(function(coin)
+						if MM2.Autofarm.Enabled then
+							if coin.Parent.Name == "CoinContainer" then
+								local coinDistance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - coin.Position).Magnitude
+								if coinDistance <= 40 and coin:GetAttribute("CoinID") == MM2.Autofarm.FarmType and MM2.Autofarm.Enabled then
+									game.Players.LocalPlayer.Character.HumanoidRootPart:PivotTo(coin.CFrame)
+								end
+							end
+						end
+					end)
+				end
+				task.wait(MM2.Autofarm.Speed)
+			end
+		end)
+
+		TabMM2:CreateSection("Visual")
+
+		local Lobbies = {
+			"Default",
+			"Legacy"
+		}
+
+		TabMM2:CreateDropdown({
+			Name = "Lobbies",
+			Options = Lobbies,
+			CurrentOption = {"Default"},
+			MultipleOptions = false,
+			Flag = "MM2VisualLobby", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+			Callback = function(Options)
+				MM2.Visual.Lobby = Options[1]
+			end,
+		})
+
+		TabMM2:CreateButton({
+			Name = "Replace Lobby",
+			Callback = function()
+				local LobbyAssets = {
+					Default = "rbxassetid://3471585557",
+					Legacy = "rbxassetid://1042562006"
+				}
+
+
+				local OldLobby
+				if workspace:FindFirstChild("Lobby") then
+
+					OldLobby = workspace.Lobby
+					OldLobby.Parent = game.ReplicatedStorage
+				end
+
+				local Lobby = game:GetObjects(LobbyAssets[MM2.Visual.Lobby])[1]
+				Lobby.Parent = workspace
+				Lobby.Name = "Lobby"
+
+				for i,v in OldLobby.Spawns:GetChildren() do
+					v.Enabled = false
+				end
+
+				Rayfield:Notify({
+					Title = "Success",
+					Content = "Successfully replaced lobby to "..MM2.Visual.Lobby,
+					Duration = 6.5,
+					Image = "check",
+				})
+			end,
+		})
+
+
+		TabMM2:CreateSection("Autofarm")
+
+
+		TabMM2:CreateToggle({
+			Name = "Enabled",
+			CurrentValue = false,
+			Flag = "MM2AutofarmEnabled", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+			Callback = function(Value)
+				MM2.Autofarm.Enabled = Value
+				if Value then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.Orientation = Vector3.new(90, -5, 0)
+				else
+					game.Players.LocalPlayer.Character.Humanoid.Health = 0
+				end
+			end,
+		})
+
+		TabMM2:CreateSlider({
+			Name = "Farm Speed",
+			Range = {0.1, 5},
+			Increment = 0.1,
+			Suffix = "seconds",
+			CurrentValue = MM2.Autofarm.Speed,
+			Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+			Callback = function(Value)
+				MM2.Autofarm.Speed = Value
+			end,
+		})
+
+		local farmOptions = {
+			"Coin"
+		}
+		if workspace:GetAttribute("IsChristmas") then
+			table.insert(farmOptions, "Token")
+
+		end
+		if workspace:GetAttribute("IsHalloween") then
+			table.insert(farmOptions, "Candy")
+
+		end
+		if workspace:GetAttribute("IsSummer") then
+			table.insert(farmOptions, "BeachBall")
+
+		end
+		if workspace:GetAttribute("IsEaster") then
+			table.insert(farmOptions, "Egg")
+
+		end
+		if workspace:GetAttribute("IsValentines") then
+			table.insert(farmOptions, "Heart")
+
+		end
+		TabMM2:CreateDropdown({
+			Name = "Coin ID",
+			Options = farmOptions,
+			CurrentOption = {"Coin"},
+			MultipleOptions = false,
+			Flag = "MM2AutofarmType", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+			Callback = function(Options)
+				MM2.Autofarm.FarmType = Options
+			end,
+		})
+	end,
+}
+local LimestoneUI = {
+	Init = function()
+		local Window = Rayfield:CreateWindow({
+			Name = "Limestone Hub",
+			Icon = "mountain", -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+			LoadingTitle = "Limestone Hub",
+			LoadingSubtitle = "Ultimate hacking tool",
+			Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+			DisableRayfieldPrompts = false,
+			DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+			ConfigurationSaving = {
+				Enabled = false,
+				FolderName = nil, -- Create a custom folder for your hub/game
+				FileName = "limestone"
+			},
+
+			Discord = {
+				Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+				Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+				RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+			},
+
+			KeySystem = false, -- Set this to true to use our key system
+			KeySettings = {
+				Title = "Limestone Hub",
+				Subtitle = "Key System",
+				Note = "Join our server and get the key", -- Use this to tell the user how to get a key
+				FileName = "limestoneKEY", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+				SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+				GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+				Key = {"LimestoneHubONTOP", "realbxnnie", "HubLimestone"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+			}
+		})
+
+		local TabUniversal = Window:CreateTab("Universal", "globe") -- Title, Image
+		TabUniversal:CreateSection("Player")
+
+		TabUniversal:CreateSlider({
+			Name = "Walk Speed",
+			Range = {16, 100},
+			Increment = 0.1,
+			Suffix = "studs",
+			CurrentValue = 16,
+			Flag = "PlayerSpeed", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+			Callback = function(Value)
+				game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+			end,
+		})
+
+		TabUniversal:CreateSlider({
+			Name = "Jump Power",
+			Range = {50, 1600},
+			Increment = 0.1,
+			Suffix = "studs",
+			CurrentValue = 50,
+			Flag = "PlayerJump", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+			Callback = function(Value)
+				if game.Players.LocalPlayer.Character.Humanoid.UseJumpPower then
+					game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+				else
+					game.Players.LocalPlayer.Character.Humanoid.JumpHeight = math.round(Value/7)
+				end
+			end,
+		})
+
+		TabUniversal:CreateSection("Other")
+		TabUniversal:CreateButton({
+			Name = "Server Hop",
+			Callback = function()
+				game["Teleport Service"]:Teleport(game.PlaceId, game.Players.LocalPlayer)
+			end,
+		})
+
+		Limestone.Debugger.Debug("Loaded Tabs.Universal")
+
+
+		if game.GameId == 66654135 then
+			
+			
+			Tabs.MM2(Window)
+			Limestone.Debugger.Debug("Loaded Tabs.MurderMystery2")
+
+		end
+
+		local TabInfo = Window:CreateTab("Information", "info")
+		TabInfo:CreateSection("Script Information")
+
+		TabInfo:CreateParagraph({
+			Title = "Script Author",
+			Content = "realbxnnie"
+		})
+
+		TabInfo:CreateParagraph({
+			Title = "Inspired by",
+			Content = "Eclipse Hub"
+		})
+
+		TabInfo:CreateParagraph({
+			Title = "Source Code",
+			Content = "https://github.com/realbxnnie/LimestoneHub"
+		})
+
+		TabInfo:CreateSection("Local Information")
+
+		TabInfo:CreateParagraph({
+			Title = "Script Version",
+			Content = "v"..Limestone.Version
+		})
+
+		TabInfo:CreateParagraph({
+			Title = "Player Name",
+			Content = game.Players.LocalPlayer.Name
+		})
+
+		TabInfo:CreateParagraph({
+			Title = "Executor",
+			Content = identifyexecutor()
+		})
+
+		TabInfo:CreateDivider()
+		TabInfo:CreateLabel("Made with love", "heart")
+		
+		Limestone.Debugger.Debug("Loaded Tabs.Info")
+	end
+
+}
+
+Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+Limestone.Debugger.Debug("Loaded Rayfield")
+
+Limestone.Debugger.Debug("Loaded LimestoneUI")
+
+LimestoneUI.Init()
