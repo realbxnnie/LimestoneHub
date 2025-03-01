@@ -1,5 +1,13 @@
 # Limestone Hub - Ultimate hacking tool
-1 game available
+
+Available games:
+| Game  | Status |
+| ------------- | ------------- |
+| Murder Mystery 2  | 🟢 WORKING  |
+| Brookhaven RP  | 🟡 IN DEVELOPMENT  |
+| Natural Disaster Survival  | 🟡 IN DEVELOPMENT  |
+| Doors  | 🟡 IN DEVELOPMENT  |
+| Pet Simulator 99 | 🟡 IN DEVELOPMENT  |
 
 Version: v0.10\
 Usage:
