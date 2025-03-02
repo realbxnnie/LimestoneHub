@@ -4,7 +4,7 @@ Available games:
 | Game  | Status |
 | ------------- | ------------- |
 | Murder Mystery 2  | 🟢 WORKING  |
-| Natural Disaster Survival  | 🟡 IN DEVELOPMENT  |
+| Race Clicker | 🟡 IN DEVELOPMENT  |
 | Doors  | 🟡 IN DEVELOPMENT  |
 | Pet Simulator 99 | 🟡 IN DEVELOPMENT  |
 
